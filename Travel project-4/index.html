@@ -1,0 +1,198 @@
+ <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Explore the World — Interactive Travel Experience</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome (stable CDN, no domain restrictions) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="nav-inner container">
+      <div class="logo">Explore<span class="accent">.</span></div>
+      <nav class="nav-links">
+        <a href="#hero">Home</a>
+        <a href="#featured">Destinations</a>
+        <a href="#search">Search</a>
+        <a href="#map-section">Map</a>
+        <a href="#landmarks-section">Landmarks</a>
+        <a href="#ai-trip-planner">AI Trip Planner</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="btn" id="top-btn" title="Back to top">
+          <i class="fa-solid fa-arrow-up"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="hero" style="background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;">
+      <video class="bg-video" autoplay muted loop playsinline preload="none"
+             poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80" aria-hidden="true">
+        <!-- Reliable, permanent Pexels CDN video -->
+        <source src="https://videos.pexels.com/video-files/856046/856046-hd_1280_720_30fps.mp4" type="video/mp4">
+      </video>
+      <div class="bg-overlay"></div>
+
+      <div class="hero-content container">
+        <h1 class="site-title">Explore the World <span class="emoji">🌍</span></h1>
+        <p class="lead">A visual journey through beautiful destinations — search, explore, and learn.</p>
+        <div class="hero-cta">
+          <button class="btn" id="explore-btn">Start Exploring</button>
+          <button class="btn" id="random-btn" title="Surprise me">Surprise Me</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED DESTINATIONS -->
+    <section id="featured" class="container section">
+      <h2 class="section-title">Featured Destinations</h2>
+      <div class="grid" id="featured-grid"></div>
+    </section>
+
+    <!-- SEARCH -->
+    <section id="search" class="container section">
+      <h2 class="section-title">Search Destinations</h2>
+
+      <div class="search-row">
+        <div class="search-bar">
+          <input id="search-input" placeholder="Type a city or destination (e.g. Paris, Tokyo)" aria-label="Search destinations" />
+        </div>
+        <div class="actions">
+          <button class="btn" id="search-btn">Search</button>
+          <div id="search-loader" class="loader" style="display:none" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="grid" id="search-grid"></div>
+        <aside class="info-panel" id="info-panel">
+          <div id="wiki-info" class="wiki-content">
+            Search a city to see description, coordinates & weather here.
+          </div>
+          <div id="weather-info"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section id="map-section" class="container section">
+      <h2 class="section-title">Map</h2>
+      <div id="map"></div>
+    </section>
+
+    <!-- LANDMARKS -->
+    <section id="landmarks-section" class="container section">
+      <h2 class="section-title">Famous Landmarks</h2>
+      <p class="section-sub">Discover iconic places near your searched destination.</p>
+      <div id="landmark-grid" class="grid"></div>
+    </section>
+
+    <!-- AI TRIP PLANNER -->
+    <section id="ai-trip-planner" class="ai-wrap">
+      <div class="container">
+        <h2 class="ai-title">✨ AI Trip Planner — Your Smart Travel Assistant</h2>
+        <p class="ai-sub">Tell me where, how long, your vibe — I’ll craft a day-by-day plan. No sign-in. No backend.</p>
+        
+        <form id="ai-form" class="ai-form" onsubmit="return false;">
+          <div class="ai-row">
+            <label>Destination<br>
+              <input id="ai-destination" type="text" placeholder="Type any destination (e.g., Goa, Paris, Manali)" required>
+            </label>
+            <label>Days<br>
+              <input id="ai-days" type="number" min="1" max="14" value="3" placeholder="How many days?" required>
+            </label>
+            <label>Budget<br>
+              <select id="ai-budget" aria-label="Budget">
+                <option>Budget</option>
+                <option selected>Mid</option>
+                <option>Luxury</option>
+              </select>
+            </label>
+            <label>Month (optional)<br>
+              <input id="ai-month" type="text" placeholder="e.g., December">
+            </label>
+          </div>
+
+          <fieldset class="ai-interests">
+            <legend>Interests</legend>
+            <label><input type="checkbox" value="Food" checked> 🍜 Food</label>
+            <label><input type="checkbox" value="Nature" checked> 🌴 Nature</label>
+            <label><input type="checkbox" value="Adventure"> 🧗 Adventure</label>
+            <label><input type="checkbox" value="Relaxation"> 🧘 Relaxation</label>
+            <label><input type="checkbox" value="History"> 🏛️ History</label>
+            <label><input type="checkbox" value="Nightlife"> 🌃 Nightlife</label>
+          </fieldset>
+
+          <p class="ai-hint">💡 Leave “Month” blank if not sure. I’ll plan for any season.</p>
+
+          <div class="ai-actions">
+            <button type="submit" id="ai-generate" class="ai-btn-primary">Generate My Trip ✈️</button>
+            <button type="button" id="ai-copy" class="ai-btn" disabled>Copy Plan</button>
+            <button type="button" id="ai-print" class="ai-btn" disabled>Download PDF</button>
+          </div>
+        </form>
+
+        <div id="ai-status" class="ai-status" hidden>
+          <div class="ai-dots"><span></span><span></span><span></span></div>
+          <div>Thinking... crafting your itinerary</div>
+        </div>
+
+        <section id="ai-output" class="ai-output" hidden></section>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="container section about">
+      <h2 class="section-title">About</h2>
+      <p>Built with HTML, CSS and JavaScript. Integrates Unsplash, Wikipedia and OpenWeather APIs. Interactive map powered by Leaflet & OpenStreetMap.</p>
+      <p>Made by <strong>Abhijeet Anand</strong>  </p>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-inner" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+      <img id="modal-img" src="" alt="" />
+      <div class="meta">
+        <h3 id="modal-title"></h3>
+        <p id="modal-desc"></p>
+        <div id="modal-extra"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <p>Made with ❤️ by Abhijeet Anand •  </p>
+    </div>
+  </footer>
+
+  <!-- MAIN SCRIPT (kept last) -->
+  <script src="script.js"></script>
+</body>
+</html>
